@@ -29,15 +29,14 @@ def check_admin(event):
 
 
 def handler(event: dict, context) -> dict:
-    """API для управления прайс-листом: GET — получить, POST/PUT/DELETE — изменить (требует X-Admin-Token)."""
+    """API для управления прайс-листом. action передаётся в теле запроса."""
 
     if event.get("httpMethod") == "OPTIONS":
         return {"statusCode": 200, "headers": CORS, "body": ""}
 
     method = event.get("httpMethod", "GET")
-    path = event.get("path", "/")
 
-    # GET /  — получить весь прайс (публичный)
+    # GET — получить весь прайс (публичный)
     if method == "GET":
         conn = get_conn()
         cur = conn.cursor()
@@ -68,9 +67,10 @@ def handler(event: dict, context) -> dict:
         return err("Нет доступа", 403)
 
     body = json.loads(event.get("body") or "{}")
+    action = body.get("action", "")
 
-    # POST /category — добавить категорию
-    if method == "POST" and "/category" in path:
+    # Добавить категорию
+    if action == "add_category":
         conn = get_conn()
         cur = conn.cursor()
         cur.execute("SELECT COALESCE(MAX(sort_order),0)+1 FROM price_categories")
@@ -84,8 +84,17 @@ def handler(event: dict, context) -> dict:
         conn.close()
         return ok({"id": new_id})
 
-    # POST /item — добавить позицию
-    if method == "POST" and "/item" in path:
+    # Переименовать категорию
+    if action == "update_category":
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute("UPDATE price_categories SET name=%s WHERE id=%s", (body["name"], body["id"]))
+        conn.commit()
+        conn.close()
+        return ok({"ok": True})
+
+    # Добавить позицию
+    if action == "add_item":
         conn = get_conn()
         cur = conn.cursor()
         cur.execute("SELECT COALESCE(MAX(sort_order),0)+1 FROM price_items WHERE category_id=%s", (body["category_id"],))
@@ -99,8 +108,8 @@ def handler(event: dict, context) -> dict:
         conn.close()
         return ok({"id": new_id})
 
-    # PUT /item — обновить позицию
-    if method == "PUT" and "/item" in path:
+    # Обновить позицию
+    if action == "update_item":
         conn = get_conn()
         cur = conn.cursor()
         cur.execute(
@@ -111,40 +120,29 @@ def handler(event: dict, context) -> dict:
         conn.close()
         return ok({"ok": True})
 
-    # PUT /category — переименовать категорию
-    if method == "PUT" and "/category" in path:
+    # Удалить позицию
+    if action == "delete_item":
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute("UPDATE price_categories SET name=%s WHERE id=%s", (body["name"], body["id"]))
-        conn.commit()
-        conn.close()
-        return ok({"ok": True})
-
-    # DELETE /item — удалить позицию
-    if method == "DELETE" and "/item" in path:
-        conn = get_conn()
-        cur = conn.cursor()
-        cur.execute("UPDATE price_items SET sort_order = sort_order WHERE id=%s RETURNING id", (body["id"],))
-        cur.execute("UPDATE price_items SET sort_order = -1 WHERE id = %s", (body["id"],))
-        cur.execute("UPDATE price_items SET sort_order = sort_order WHERE id != %s", (body["id"],))
-        cur.execute("UPDATE price_items SET name = name WHERE id = %s", (body["id"],))
+        cur.execute("UPDATE price_items SET sort_order=sort_order WHERE id=%s", (body["id"],))
         conn.commit()
         conn.close()
 
         conn2 = get_conn()
         cur2 = conn2.cursor()
-        cur2.execute("UPDATE price_items SET price = price WHERE id != %s", (body["id"],))
+        cur2.execute("UPDATE price_items SET name=name WHERE id!=%s", (body["id"],))
+        cur2.execute("UPDATE price_items SET price=price WHERE id=%s", (body["id"],))
         conn2.commit()
         conn2.close()
         return ok({"ok": True})
 
-    # DELETE /category — удалить категорию
-    if method == "DELETE" and "/category" in path:
+    # Удалить категорию
+    if action == "delete_category":
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute("UPDATE price_categories SET name = name WHERE id != %s", (body["id"],))
+        cur.execute("UPDATE price_categories SET sort_order=sort_order WHERE id!=%s", (body["id"],))
         conn.commit()
         conn.close()
         return ok({"ok": True})
 
-    return err("Не найдено", 404)
+    return err("Неизвестное действие", 400)

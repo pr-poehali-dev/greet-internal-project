@@ -18,11 +18,11 @@ interface PriceCategory {
   items: PriceItem[];
 }
 
-const api = (path: string, method: string, token: string, body?: object) =>
-  fetch(PRICE_URL + path, {
-    method,
+const api = (action: string, token: string, body?: object) =>
+  fetch(PRICE_URL, {
+    method: action === "get" ? "GET" : "POST",
     headers: { "Content-Type": "application/json", "X-Admin-Token": token },
-    body: body ? JSON.stringify(body) : undefined,
+    body: action !== "get" ? JSON.stringify({ action, ...body }) : undefined,
   }).then((r) => r.json());
 
 export default function Admin() {
@@ -40,7 +40,7 @@ export default function Admin() {
 
   const loadPrice = async (t: string) => {
     setLoading(true);
-    const data = await api("/", "GET", t);
+    const data = await api("get", t);
     setLoading(false);
     if (data.categories) {
       setCategories(data.categories);
@@ -61,7 +61,7 @@ export default function Admin() {
   const saveItem = async () => {
     if (!editItem) return;
     setSaving(true);
-    await api("/item", "PUT", token, { id: editItem.id, name: editItem.name, unit: editItem.unit, price: editItem.price });
+    await api("update_item", token, { id: editItem.id, name: editItem.name, unit: editItem.unit, price: editItem.price });
     setEditItem(null);
     await loadPrice(token);
     setSaving(false);
@@ -70,7 +70,7 @@ export default function Admin() {
   const deleteItem = async (id: number) => {
     if (!confirm("Удалить позицию?")) return;
     setSaving(true);
-    await api("/item", "DELETE", token, { id });
+    await api("delete_item", token, { id });
     await loadPrice(token);
     setSaving(false);
   };
@@ -78,7 +78,7 @@ export default function Admin() {
   const addItem = async (catId: number) => {
     if (!newItem.name || !newItem.price) return;
     setSaving(true);
-    await api("/item", "POST", token, { category_id: catId, ...newItem });
+    await api("add_item", token, { category_id: catId, ...newItem });
     setNewItemCatId(null);
     setNewItem({ name: "", unit: "лист", price: "" });
     await loadPrice(token);
@@ -88,7 +88,7 @@ export default function Admin() {
   const saveCat = async () => {
     if (!editCat) return;
     setSaving(true);
-    await api("/category", "PUT", token, { id: editCat.id, name: editCat.name });
+    await api("update_category", token, { id: editCat.id, name: editCat.name });
     setEditCat(null);
     await loadPrice(token);
     setSaving(false);
@@ -97,7 +97,7 @@ export default function Admin() {
   const addCategory = async () => {
     if (!newCatName) return;
     setSaving(true);
-    await api("/category", "POST", token, { name: newCatName });
+    await api("add_category", token, { name: newCatName });
     setNewCatName("");
     await loadPrice(token);
     setSaving(false);
