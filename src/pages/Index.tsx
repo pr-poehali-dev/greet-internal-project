@@ -2,6 +2,7 @@ import { useState } from "react";
 import Icon from "@/components/ui/icon";
 
 const HERO_IMAGE = "https://cdn.poehali.dev/projects/15824cac-ee6d-4ea7-a6e7-df15a6b79380/files/39487ced-4825-4429-9ab8-82457e933d30.jpg";
+const SEND_ORDER_URL = "https://functions.poehali.dev/d7c390f9-e07c-4535-bc59-e6c76ddddc5e";
 
 const priceData = [
   {
@@ -42,11 +43,22 @@ const navLinks = [
 const Index = () => {
   const [form, setForm] = useState({ name: "", phone: "", product: "", quantity: "", comment: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    try {
+      await fetch(SEND_ORDER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+    } finally {
+      setLoading(false);
+      setSubmitted(true);
+    }
   };
 
   const scrollTo = (href: string) => {
@@ -371,9 +383,10 @@ const Index = () => {
                     </div>
                     <button
                       type="submit"
-                      className="w-full bg-[#2d6e2d] text-white font-oswald py-4 uppercase tracking-widest text-base hover:bg-[#4a9e4a] transition-colors border border-[#4a9e4a]"
+                      disabled={loading}
+                      className="w-full bg-[#2d6e2d] text-white font-oswald py-4 uppercase tracking-widest text-base hover:bg-[#4a9e4a] transition-colors border border-[#4a9e4a] disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                      Отправить заявку
+                      {loading ? "Отправляем..." : "Отправить заявку"}
                     </button>
                     <p className="font-roboto text-gray-600 text-xs text-center">
                       Нажимая кнопку, вы соглашаетесь с обработкой персональных данных
