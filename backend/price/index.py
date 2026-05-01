@@ -5,7 +5,7 @@ import psycopg2
 CORS = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, X-Admin-Token",
+    "Access-Control-Allow-Headers": "Content-Type",
 }
 
 ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "")
@@ -23,8 +23,8 @@ def err(msg, code=400):
     return {"statusCode": code, "headers": CORS, "body": json.dumps({"error": msg}, ensure_ascii=False)}
 
 
-def check_admin(event):
-    token = event.get("headers", {}).get("X-Admin-Token", "")
+def check_admin(body):
+    token = body.get("token", "")
     return token == ADMIN_TOKEN and ADMIN_TOKEN != ""
 
 
@@ -63,10 +63,10 @@ def handler(event: dict, context) -> dict:
 
         return ok({"categories": list(categories.values())})
 
-    if not check_admin(event):
-        return err("Нет доступа", 403)
-
     body = json.loads(event.get("body") or "{}")
+
+    if not check_admin(body):
+        return err("Нет доступа", 403)
     action = body.get("action", "")
 
     # Добавить категорию

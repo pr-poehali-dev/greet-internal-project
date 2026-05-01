@@ -21,8 +21,8 @@ interface PriceCategory {
 const api = (action: string, token: string, body?: object) =>
   fetch(PRICE_URL, {
     method: action === "get" ? "GET" : "POST",
-    headers: { "Content-Type": "application/json", "X-Admin-Token": token },
-    body: action !== "get" ? JSON.stringify({ action, ...body }) : undefined,
+    headers: { "Content-Type": "application/json" },
+    body: action !== "get" ? JSON.stringify({ action, token, ...body }) : undefined,
   }).then((r) => r.json());
 
 export default function Admin() {
