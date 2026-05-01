@@ -1,30 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Icon from "@/components/ui/icon";
 
 const HERO_IMAGE = "https://cdn.poehali.dev/projects/15824cac-ee6d-4ea7-a6e7-df15a6b79380/files/39487ced-4825-4429-9ab8-82457e933d30.jpg";
 const SEND_ORDER_URL = "https://functions.poehali.dev/d7c390f9-e07c-4535-bc59-e6c76ddddc5e";
+const PRICE_URL = "https://functions.poehali.dev/29d70dcb-46e1-4a15-b050-9a8523af6c85";
 
-const priceData = [
-  {
-    category: "OSB плиты",
-    items: [
-      { name: "OSB-3, 9 мм (2440×1220)", unit: "лист", price: "790" },
-      { name: "OSB-3, 12 мм (2440×1220)", unit: "лист", price: "980" },
-      { name: "OSB-3, 15 мм (2440×1220)", unit: "лист", price: "1 190" },
-      { name: "OSB-3, 18 мм (2440×1220)", unit: "лист", price: "1 420" },
-    ],
-  },
-  {
-    category: "Фанера",
-    items: [
-      { name: "Фанера ФК, 6 мм (1525×1525)", unit: "лист", price: "680" },
-      { name: "Фанера ФК, 10 мм (1525×1525)", unit: "лист", price: "1 050" },
-      { name: "Фанера ФСФ, 12 мм (1220×2440)", unit: "лист", price: "1 280" },
-      { name: "Фанера ФСФ, 18 мм (1525×1525)", unit: "лист", price: "1 750" },
-      { name: "Фанера ламинированная, 18 мм", unit: "лист", price: "2 100" },
-    ],
-  },
-];
+interface PriceItem { id: number; name: string; unit: string; price: string; }
+interface PriceCategory { id: number; name: string; items: PriceItem[]; }
 
 const features = [
   { icon: "Truck", title: "Быстрая доставка", desc: "Доставим на объект в течение 1–2 дней по городу и области" },
@@ -45,6 +27,13 @@ const Index = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [priceData, setPriceData] = useState<PriceCategory[]>([]);
+
+  useEffect(() => {
+    fetch(PRICE_URL).then((r) => r.json()).then((d) => {
+      if (d.categories) setPriceData(d.categories);
+    });
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -224,10 +213,10 @@ const Index = () => {
 
           <div className="space-y-8">
             {priceData.map((cat) => (
-              <div key={cat.category} className="border-2 border-[#0d0d0d] overflow-hidden">
+              <div key={cat.id} className="border-2 border-[#0d0d0d] overflow-hidden">
                 <div className="bg-[#0d0d0d] px-6 py-3 flex items-center gap-3">
                   <div className="w-2 h-2 bg-[#4a9e4a]" />
-                  <span className="font-oswald text-white text-lg uppercase tracking-wider">{cat.category}</span>
+                  <span className="font-oswald text-white text-lg uppercase tracking-wider">{cat.name}</span>
                 </div>
                 <table className="w-full">
                   <thead>
@@ -240,7 +229,7 @@ const Index = () => {
                   <tbody>
                     {cat.items.map((item, i) => (
                       <tr
-                        key={item.name}
+                        key={item.id}
                         className={`border-b border-[#0d0d0d]/20 hover:bg-[#e8f0e8] transition-colors ${i % 2 === 0 ? "bg-white" : "bg-[#f5f3ef]"}`}
                       >
                         <td className="font-roboto px-6 py-4 text-[#0d0d0d] text-sm">{item.name}</td>
