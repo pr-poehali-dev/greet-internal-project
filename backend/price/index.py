@@ -25,7 +25,11 @@ def err(msg, code=400):
 
 def check_admin(body):
     token = body.get("token", "")
-    return token == ADMIN_TOKEN and ADMIN_TOKEN != ""
+    if not token:
+        return False
+    if ADMIN_TOKEN:
+        return token == ADMIN_TOKEN
+    return False
 
 
 def handler(event: dict, context) -> dict:
@@ -66,6 +70,7 @@ def handler(event: dict, context) -> dict:
     body = json.loads(event.get("body") or "{}")
 
     if not check_admin(body):
+        print(f"[403] token_received='{body.get('token','')}' admin_token_set={bool(ADMIN_TOKEN)}")
         return err("Нет доступа", 403)
     action = body.get("action", "")
 
