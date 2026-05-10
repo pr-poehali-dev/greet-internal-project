@@ -8,8 +8,6 @@ CORS = {
     "Access-Control-Allow-Headers": "Content-Type",
 }
 
-ADMIN_TOKEN = os.environ.get("ADMIN_TOKEN", "")
-
 
 def get_conn():
     return psycopg2.connect(os.environ["DATABASE_URL"])
@@ -23,13 +21,11 @@ def err(msg, code=400):
     return {"statusCode": code, "headers": CORS, "body": json.dumps({"error": msg}, ensure_ascii=False)}
 
 
-def check_admin(body):
-    token = body.get("token", "")
-    if not token:
+def check_admin(token):
+    admin_token = os.environ.get("ADMIN_TOKEN", "")
+    if not token or not admin_token:
         return False
-    if ADMIN_TOKEN:
-        return token == ADMIN_TOKEN
-    return False
+    return token == admin_token
 
 
 def handler(event: dict, context) -> dict:
@@ -68,10 +64,11 @@ def handler(event: dict, context) -> dict:
         return ok({"categories": list(categories.values())})
 
     body = json.loads(event.get("body") or "{}")
+    token = body.get("token", "")
 
-    if not check_admin(body):
-        print(f"[403] token_received='{body.get('token','')}' admin_token_set={bool(ADMIN_TOKEN)}")
+    if not check_admin(token):
         return err("Нет доступа", 403)
+
     action = body.get("action", "")
 
     # Добавить категорию
@@ -129,23 +126,17 @@ def handler(event: dict, context) -> dict:
     if action == "delete_item":
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute("UPDATE price_items SET sort_order=sort_order WHERE id=%s", (body["id"],))
+        cur.execute("DELETE FROM price_items WHERE id=%s", (body["id"],))
         conn.commit()
         conn.close()
-
-        conn2 = get_conn()
-        cur2 = conn2.cursor()
-        cur2.execute("UPDATE price_items SET name=name WHERE id!=%s", (body["id"],))
-        cur2.execute("UPDATE price_items SET price=price WHERE id=%s", (body["id"],))
-        conn2.commit()
-        conn2.close()
         return ok({"ok": True})
 
     # Удалить категорию
     if action == "delete_category":
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute("UPDATE price_categories SET sort_order=sort_order WHERE id!=%s", (body["id"],))
+        cur.execute("DELETE FROM price_items WHERE category_id=%s", (body["id"],))
+        cur.execute("DELETE FROM price_categories WHERE id=%s", (body["id"],))
         conn.commit()
         conn.close()
         return ok({"ok": True})
