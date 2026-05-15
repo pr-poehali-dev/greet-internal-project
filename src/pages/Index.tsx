@@ -190,9 +190,9 @@ const Index = () => {
         <div className="absolute bottom-0 left-0 right-0 bg-[#0d0d0d]/80 backdrop-blur-sm border-t border-[#2d6e2d]">
           <div className="max-w-6xl mx-auto px-6 py-4 grid grid-cols-3 divide-x divide-[#2d6e2d]">
             {[
-              { value: "10+", label: "лет на рынке" },
-              { value: "500+", label: "клиентов" },
-              { value: "1 день", label: "срок доставки" },
+              { value: "20+", label: "лет на рынке" },
+              { value: "1000+", label: "клиентов" },
+              { value: "1-2 день", label: "срок доставки" },
             ].map((s) => (
               <div key={s.label} className="text-center px-4">
                 <div className="font-oswald text-2xl font-bold text-[#4a9e4a]">
@@ -376,18 +376,14 @@ const Index = () => {
                   {
                     icon: "Phone",
                     label: "Телефон",
-                    val: "+7 (900) 000-00-00",
+                    val: "+7 (936) 555-95-44",
                   },
                   { icon: "Mail", label: "Email", val: "info@lesplita.ru" },
-                  {
-                    icon: "MapPin",
-                    label: "Адрес",
-                    val: "г. Москва, ул. Складская, 1",
-                  },
+                  { icon: "MapPin", label: "Адрес", val: "с. Царёво, вл. 2" },
                   {
                     icon: "Clock",
                     label: "Режим работы",
-                    val: "Пн–Пт: 8:00–18:00, Сб: 9:00–15:00",
+                    val: "Пн–Пт: 9:00–17:00, Сб: 9:00–15:00",
                   },
                 ].map((c) => (
                   <div key={c.label} className="flex items-start gap-4 group">
