@@ -209,7 +209,7 @@ const Index = () => {
           <h2 className="font-oswald text-4xl md:text-5xl font-bold text-[#0d0d0d] uppercase mb-3">
             Прайс-лист
           </h2>
-          <p className="font-roboto text-gray-500 mb-10">Цены указаны за единицу товара. При заказе от 50 листов — скидка 7%.</p>
+          <p className="font-roboto text-gray-500 mb-10">Цены указаны за единицу товара.</p>
 
           <div className="space-y-8">
             {priceData.map((cat) => (
