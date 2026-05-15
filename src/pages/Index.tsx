@@ -378,7 +378,7 @@ const Index = () => {
                     label: "Телефон",
                     val: "+7 (936) 555-95-44",
                   },
-                  { icon: "Mail", label: "Email", val: "info@lesplita.ru" },
+                  { icon: "Mail", label: "Email", val: "lesplita@mail.ru" },
                   { icon: "MapPin", label: "Адрес", val: "с. Царёво, вл. 2" },
                   {
                     icon: "Clock",
