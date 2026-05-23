@@ -540,7 +540,7 @@ const Index = () => {
             СКЛАД1565
           </span>
           <span className="font-roboto text-gray-600 text-xs">
-            © 2024 ЛесПлита. Все права защищены.
+            © 2024 СКЛАД1565. Все права защищены.
           </span>
           <div className="flex gap-6">
             {navLinks.map((l) => (

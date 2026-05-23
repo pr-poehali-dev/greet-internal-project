@@ -32,7 +32,7 @@ def handler(event: dict, context) -> dict:
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #f5f3ef; padding: 24px;">
       <div style="background: #1a3d1a; padding: 20px 24px; margin-bottom: 0;">
         <h2 style="color: #ffffff; margin: 0; font-size: 20px; letter-spacing: 2px; text-transform: uppercase;">
-          НОВАЯ ЗАЯВКА — ЛесПлита
+          НОВАЯ ЗАЯВКА — СКЛАД1565
         </h2>
       </div>
       <div style="background: #ffffff; border: 2px solid #0d0d0d; border-top: none; padding: 24px;">
@@ -61,7 +61,7 @@ def handler(event: dict, context) -> dict:
       </div>
       <div style="background: #2d6e2d; padding: 12px 24px; margin-top: 0;">
         <p style="color: #ffffff; margin: 0; font-size: 12px; text-align: center;">
-          Заявка отправлена с сайта ЛесПлита
+          Заявка отправлена с сайта СКЛАД1565
         </p>
       </div>
     </div>
