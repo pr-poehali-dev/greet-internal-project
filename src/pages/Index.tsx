@@ -475,16 +475,14 @@ const Index = () => {
                         className="w-full bg-[#0d0d0d] border-2 border-[#2d6e2d] text-white font-roboto text-sm px-3 py-2.5 focus:outline-none focus:border-[#4a9e4a] transition-colors"
                       >
                         <option value="">Выберите продукцию</option>
-                        <option>OSB-3, 9 мм</option>
-                        <option>OSB-3, 12 мм</option>
-                        <option>OSB-3, 15 мм</option>
-                        <option>OSB-3, 18 мм</option>
-                        <option>Фанера ФК, 6 мм</option>
-                        <option>Фанера ФК, 10 мм</option>
-                        <option>Фанера ФСФ, 12 мм</option>
-                        <option>Фанера ФСФ, 18 мм</option>
-                        <option>Фанера ламинированная, 18 мм</option>
-                        <option>Нужен подбор</option>
+                        <option>OSB-3</option>
+                        <option>Фанера ФК</option>
+                        <option>Фанера ФК шлифованная</option>
+                        <option>Фанера ФСФ</option>
+                        <option>Фанера ФСФ шлифованная</option>
+                        <option>ДСП</option>
+                        <option>ДВП оргалит</option>
+                        <option>Фанера ламинированная</option>
                       </select>
                     </div>
                     <div>
