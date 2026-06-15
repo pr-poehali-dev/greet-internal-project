@@ -24,7 +24,7 @@ const Navbar = ({ scrollTo }: NavbarProps) => {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0d0d0d] border-b-2 border-[#2d6e2d]">
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between h-16">
         <span className="font-oswald text-white text-xl font-bold tracking-widest uppercase">
-          СКЛАД1565
+          ФАНЕРА365
         </span>
         <div className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
